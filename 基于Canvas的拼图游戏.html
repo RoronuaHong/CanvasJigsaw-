@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>基于Canvas的拼图游戏</title>
+	<link rel="stylesheet" href="reset.css">
+</head>
+<style>
+	#canvasimg {
+		display: block;
+		position: absolute;
+		top: 100px;
+		left: 50px;
+		width: 600px;
+		height: 600px;
+	}
+	#mycanvas {
+		position: absolute;
+		top: 100px;
+		left: 700px;
+		border:  1px solid #c3c3c3;
+	}
+</style>
+<body>
+	<img src="canvas.jpg" alt="" id="canvasimg">
+	<canvas id="mycanvas" width="600", height="600"></canvas>
+</body>
+<script>
+	/**
+	 * [DrawImages 绘制图片]
+	 * @param {[type]} ctx [画布设置]
+	 * @param {[type]} img [图片设置]
+	 */
+	function DrawImages(ctx, img) {
+		var _this = this;
+		
+		//设置数值参数
+		this.sumarray = [0, 200, 400];
+
+		//设置去重随机数
+		this.sumarray.sort(function() {
+			return 0.5 - Math.random();
+		})
+		for(var i = 0; i < this.sumarray.length; i++) {
+			console.log(this.sumarray[i]);
+		}
+		this.imgarray = [];
+
+		//生成九个，隐藏一个，插入数组中
+		ctx.drawImage(img, 0, 	0, 	 200, 200, 0, 	0, 	 200, 200);
+		ctx.drawImage(img, 200, 0,   200, 200, 200, 0, 	 200, 200);
+		ctx.drawImage(img, 400, 0,   200, 200, 400, 0, 	 200, 200);
+		ctx.drawImage(img, 0, 	200, 200, 200, 0, 	200, 200, 200);
+		ctx.drawImage(img, 200, 200, 200, 200, 200, 200, 200, 200);
+		ctx.drawImage(img, 400, 200, 200, 200, 400, 200, 200, 200);
+		ctx.drawImage(img, 0, 	400, 200, 200, 0, 	400, 200, 200);
+		ctx.drawImage(img, 200, 400, 200, 200, 200, 400, 200, 200);
+		ctx.drawImage(img, 400, 400, 200, 200, 400, 400, 200, 200);
+
+		console.log(this.imgarray);
+	}
+
+	/**
+	 * [MyCanvas 绘制画布]
+	 */
+	function MainGame() {
+		this.canvasEle = document.getElementById("mycanvas");
+		this.contexts = this.canvasEle.getContext("2d");
+		this.imgs = document.getElementById("canvasimg");
+		new DrawImages(this.contexts, this.imgs);
+	}
+
+	/**
+	 * [onload description]
+	 * @return {[type]} [description]
+	 */
+	window.onload = function() {
+		new MainGame();
+	}
+</script>
+</html>

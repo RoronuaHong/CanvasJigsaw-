@@ -35,6 +35,26 @@
 	<canvas id="mycanvas" width="600", height="600"></canvas>
 </body>
 <script>
+	// /**
+	//  * [MyCanvas 绘制画布]
+	//  */
+	function MainGame() {
+		this.canvasEle = document.getElementById("mycanvas");
+		this.contexts = this.canvasEle.getContext("2d");
+		this.imgs = document.getElementById("canvasimg");
+		this.whites = document.getElementById("canvaswhiteimg");
+
+		new DrawImages(this.contexts, this.imgs, this.whites);
+	}
+
+	/**
+	 * [onload description]
+	 * @return {[type]} [description]
+	 */
+	window.onload = function() {
+		new MainGame();
+	}
+
 	/**
 	 * [DrawImages 绘制图片]
 	 * @param {[type]} ctx [画布设置]
@@ -110,121 +130,181 @@
 
 		new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, true);
 
-		console.log(this.newarray);
+		// console.log(this.newarray);
 
 		document.onkeyup = function(e) {
 			_this.KeyMoveBlock(ctx, img, whites, e);
 		}
 
-		document.onmousedown = function() {
-			_this.MouseMove();
-		}
+		// document.onmousedown = function() {
+		// 	_this.MouseMove();
+		// }
 	}
 
 	//移动拼图方块
-	DrawImages.prototype.KeyMoveBlock = function(ctx, img, whites, e) {
+	DrawImages.prototype = {
+		//交换位置
+		ChangePosition: function(newposition, whitecheck) {
+			this.temp = this.newarray[newposition];
+			this.newarray[newposition] = this.newarray[whitecheck];
+			this.newarray[whitecheck] = this.temp;
+		},
+		KeyMoveBlock: function(ctx, img, whites, e) {
+			//判断空白格在哪个位置
+			for(var i = 0; i < this.newarray.length; i++) {
+				if(this.newarray[i] == 8) {
+					this.whitecheck = i;
+				}
+			}
 
-		//判断空白格在哪个位置
-		for(var i = 0; i < this.newarray.length; i++) {
-			if(this.newarray[i] == 8) {
-				this.whitecheck = i;
+			//上
+			if(e.keyCode == 87 || e.keyCode == 38) {
+				this.newbottom = this.whitecheck + 3;
+
+				//交换位置
+				if(this.whitecheck / 3 < 2) {
+					this.ChangePosition(this.newbottom, this.whitecheck);
+
+					//重新绘制新图像
+					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+				}
+				// console.log(this.newarray);
+			}
+
+			//下
+			if(e.keyCode == 83 || e.keyCode == 40) {
+				// console.log(this.sumarray);
+				this.newtop = this.whitecheck - 3;
+
+				//交换位置
+				if(this.whitecheck / 3 >= 1) {
+					this.ChangePosition(this.newtop, this.whitecheck);
+
+					//重新绘制新图像
+					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+				}
+				// console.log(this.newarray);
+			}
+
+			//左
+			if(e.keyCode == 65 || e.keyCode == 37) {
+				// console.log(3)
+				this.newright = this.whitecheck + 1;
+
+				//交换位置
+				if(this.whitecheck % 3 != 2) {
+					this.ChangePosition(this.newright, this.whitecheck);
+
+					//重新绘制新图像
+					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+				}
+				console.log(this.newarray);
+			}
+
+			//右
+			if(e.keyCode == 68 || e.keyCode == 39) {
+				// console.log(4)
+				this.newleft = this.whitecheck - 1;
+
+				//交换位置
+				if(this.whitecheck % 3 != 0) {
+					this.ChangePosition(this.newleft, this.whitecheck);
+
+					//重新绘制新图像
+					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+				}
+				console.log(this.newarray);
 			}
 		}
-		// console.log(this.whitecheck);
+		//鼠标点击交换位置
+		// MouseMove: function() {
 
-		//上
-		if(e.keyCode == 87 || e.keyCode == 38) {
-			// console.log(1)
-			this.newbottom = this.whitecheck + 3;
-
-			//交换位置
-			if(this.whitecheck / 3 < 2) {
-				this.temp = this.newarray[this.newbottom];
-				this.newarray[this.newbottom] = this.newarray[this.whitecheck];
-				this.newarray[this.whitecheck] = this.temp;
-
-				//重新绘制新图像
-				new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-			}
-			console.log(this.newarray);
-		}
-
-		//下
-		if(e.keyCode == 83 || e.keyCode == 40) {
-			// console.log(this.sumarray);
-			this.newtop = this.whitecheck - 3;
-
-			//交换位置
-			if(this.whitecheck / 3 >= 1) {
-				this.temp = this.newarray[this.newtop];
-				this.newarray[this.newtop] = this.newarray[this.whitecheck];
-				this.newarray[this.whitecheck] = this.temp;
-
-				//重新绘制新图像
-				new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-			}
-			console.log(this.newarray);
-		}
-
-		//左
-		if(e.keyCode == 65 || e.keyCode == 37) {
-			// console.log(3)
-			this.newright = this.whitecheck + 1;
-
-			//交换位置
-			if(this.whitecheck % 3 != 2) {
-				this.temp = this.newarray[this.newright];
-				this.newarray[this.newright] = this.newarray[this.whitecheck];
-				this.newarray[this.whitecheck] = this.temp;
-
-				//重新绘制新图像
-				new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-			}
-			console.log(this.newarray);
-		}
-
-		//右
-		if(e.keyCode == 68 || e.keyCode == 39) {
-			// console.log(4)
-			this.newleft = this.whitecheck - 1;
-
-			//交换位置
-			if(this.whitecheck % 3 != 0) {
-				this.temp = this.newarray[this.newleft];
-				this.newarray[this.newleft] = this.newarray[this.whitecheck];
-				this.newarray[this.whitecheck] = this.temp;
-
-				//重新绘制新图像
-				new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-			}
-			console.log(this.newarray);
-		}
+		// }
 	}
+	//  // 移动拼图方块
+	// DrawImages.prototype.KeyMoveBlock = function(ctx, img, whites, e) {
 
-	//鼠标点击交换位置
-	// DrawImages.prototype.MouseMove = function() {
-	// 	console.log(5)
+	// 	//判断空白格在哪个位置
+	// 	for(var i = 0; i < this.newarray.length; i++) {
+	// 		if(this.newarray[i] == 8) {
+	// 			this.whitecheck = i;
+	// 		}
+	// 	}
+	// 	// console.log(this.whitecheck);
+
+	// 	//上
+	// 	if(e.keyCode == 87 || e.keyCode == 38) {
+	// 		// console.log(1)
+	// 		this.newbottom = this.whitecheck + 3;
+
+	// 		//交换位置
+	// 		if(this.whitecheck / 3 < 2) {
+	// 			this.temp = this.newarray[this.newbottom];
+	// 			this.newarray[this.newbottom] = this.newarray[this.whitecheck];
+	// 			this.newarray[this.whitecheck] = this.temp;
+
+	// 			//重新绘制新图像
+	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+	// 		}
+	// 		console.log(this.newarray);
+	// 	}
+
+	// 	//下
+	// 	if(e.keyCode == 83 || e.keyCode == 40) {
+	// 		// console.log(this.sumarray);
+	// 		this.newtop = this.whitecheck - 3;
+
+	// 		//交换位置
+	// 		if(this.whitecheck / 3 >= 1) {
+	// 			this.temp = this.newarray[this.newtop];
+	// 			this.newarray[this.newtop] = this.newarray[this.whitecheck];
+	// 			this.newarray[this.whitecheck] = this.temp;
+
+	// 			//重新绘制新图像
+	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+	// 		}
+	// 		console.log(this.newarray);
+	// 	}
+
+	// 	//左
+	// 	if(e.keyCode == 65 || e.keyCode == 37) {
+	// 		// console.log(3)
+	// 		this.newright = this.whitecheck + 1;
+
+	// 		//交换位置
+	// 		if(this.whitecheck % 3 != 2) {
+	// 			this.temp = this.newarray[this.newright];
+	// 			this.newarray[this.newright] = this.newarray[this.whitecheck];
+	// 			this.newarray[this.whitecheck] = this.temp;
+
+	// 			//重新绘制新图像
+	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+	// 		}
+	// 		console.log(this.newarray);
+	// 	}
+
+	// 	//右
+	// 	if(e.keyCode == 68 || e.keyCode == 39) {
+	// 		// console.log(4)
+	// 		this.newleft = this.whitecheck - 1;
+
+	// 		//交换位置
+	// 		if(this.whitecheck % 3 != 0) {
+	// 			this.temp = this.newarray[this.newleft];
+	// 			this.newarray[this.newleft] = this.newarray[this.whitecheck];
+	// 			this.newarray[this.whitecheck] = this.temp;
+
+	// 			//重新绘制新图像
+	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+	// 		}
+	// 		console.log(this.newarray);
+	// 	}
 	// }
 
-	/**
-	 * [MyCanvas 绘制画布]
-	 */
+	// //鼠标点击交换位置
+	// // DrawImages.prototype.MouseMove = function() {
+	// // 	console.log(5)
+	// // }
 
-	function MainGame() {
-		this.canvasEle = document.getElementById("mycanvas");
-		this.contexts = this.canvasEle.getContext("2d");
-		this.imgs = document.getElementById("canvasimg");
-		this.whites = document.getElementById("canvaswhiteimg");
-
-		new DrawImages(this.contexts, this.imgs, this.whites);
-	}
-
-	/**
-	 * [onload description]
-	 * @return {[type]} [description]
-	 */
-	window.onload = function() {
-		new MainGame();
-	}
 </script>
 </html>

@@ -150,7 +150,12 @@
 				}
 			}
 		},
-		//交换位置
+
+		/**
+		 * [ChangePosition 交换位置]
+		 * @param {[type]} newposition [按钮方向位置]
+		 * @param {[type]} whitecheck  [白块位置]
+		 */
 		ChangePosition: function(newposition, whitecheck) {
 			this.temp = this.newarray[newposition];
 			this.newarray[newposition] = this.newarray[whitecheck];

@@ -127,22 +127,29 @@
 		for(var i = 0; i < this.sumarray.length; i++) {
 			this.newarray.push(this.sumarray[i]);
 		}
-
 		new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, true);
 
-		// console.log(this.newarray);
+		console.log(this.newarray);
 
 		document.onkeyup = function(e) {
 			_this.KeyMoveBlock(ctx, img, whites, e);
 		}
 
-		// document.onmousedown = function() {
-		// 	_this.MouseMove();
-		// }
+		document.onmousedown = function(e) {
+			_this.MouseMove(ctx, img, whites, e);
+		}
 	}
 
 	//移动拼图方块
 	DrawImages.prototype = {
+		//判断空白格的位置
+		WhitePosition: function() {
+			for(var i = 0; i < this.newarray.length; i++) {
+				if(this.newarray[i] == 8) {
+					this.whitecheck = i;
+				}
+			}
+		},
 		//交换位置
 		ChangePosition: function(newposition, whitecheck) {
 			this.temp = this.newarray[newposition];
@@ -150,161 +157,81 @@
 			this.newarray[whitecheck] = this.temp;
 		},
 		KeyMoveBlock: function(ctx, img, whites, e) {
-			//判断空白格在哪个位置
-			for(var i = 0; i < this.newarray.length; i++) {
-				if(this.newarray[i] == 8) {
-					this.whitecheck = i;
-				}
+			this.WhitePosition();
+
+			switch(e.keyCode) {
+				case 87:case 38:
+					this.newbottom = this.whitecheck + 3;
+
+					//交换位置
+					if(this.whitecheck / 3 < 2) {
+						this.ChangePosition(this.newbottom, this.whitecheck);
+
+						//重新绘制新图像
+						new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+					};
+					break;
+				case 83: case 40:
+					this.newtop = this.whitecheck - 3;
+
+					//交换位置
+					if(this.whitecheck / 3 >= 1) {
+						this.ChangePosition(this.newtop, this.whitecheck);
+
+						//重新绘制新图像
+						new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+					};
+					break;
+				case 65: case 37:
+					this.newright = this.whitecheck + 1;
+
+					//交换位置
+					if(this.whitecheck % 3 != 2) {
+						this.ChangePosition(this.newright, this.whitecheck);
+
+						//重新绘制新图像
+						new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+					};
+					break;
+				case 68:case 39:
+					this.newleft = this.whitecheck - 1;
+
+					//交换位置
+					if(this.whitecheck % 3 != 0) {
+						this.ChangePosition(this.newleft, this.whitecheck);
+
+						//重新绘制新图像
+						new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
+					};
+					break;
+			}
+		},
+		// 鼠标点击交换位置
+		MouseMove: function(ctx, img, whites, e) {
+			e.preventDefault();
+			this.WhitePosition();
+
+			//获取鼠标点击的下标
+			this.arrays = parseInt(e.offsetX / 200) + parseInt(e.offsetY / 200) * 3;
+
+			//判断点击的子格周围是否有空白格
+			// if(this.newarray[this.arrays - 1] === (this.newarray.length - 1) || this.newarray[this.arrays + 1] === (this.newarray.length - 1) || this.newarray[this.arrays + 3] === (this.newarray.length - 1) || this.newarray[this.arrays - 3] === (this.newarray.length - 1)) {
+			// 	this.ChangePosition(this.arrays, this.whitecheck);
+			// }
+
+			if(this.newarray[this.arrays - 1] === (this.newarray.length - 1) && (this.arrays - 1) % 3 !== 2) {
+				this.ChangePosition(this.arrays, this.whitecheck);
+			}
+			if(this.newarray[this.arrays + 1] === (this.newarray.length - 1) && (this.arrays + 1) % 3 !== 0) {
+				this.ChangePosition(this.arrays, this.whitecheck);
 			}
 
-			//上
-			if(e.keyCode == 87 || e.keyCode == 38) {
-				this.newbottom = this.whitecheck + 3;
-
-				//交换位置
-				if(this.whitecheck / 3 < 2) {
-					this.ChangePosition(this.newbottom, this.whitecheck);
-
-					//重新绘制新图像
-					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-				}
-				// console.log(this.newarray);
+			if(this.newarray[this.arrays + 3] === (this.newarray.length - 1) || this.newarray[this.arrays - 3] === (this.newarray.length - 1)) {
+				this.ChangePosition(this.arrays, this.whitecheck);
 			}
-
-			//下
-			if(e.keyCode == 83 || e.keyCode == 40) {
-				// console.log(this.sumarray);
-				this.newtop = this.whitecheck - 3;
-
-				//交换位置
-				if(this.whitecheck / 3 >= 1) {
-					this.ChangePosition(this.newtop, this.whitecheck);
-
-					//重新绘制新图像
-					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-				}
-				// console.log(this.newarray);
-			}
-
-			//左
-			if(e.keyCode == 65 || e.keyCode == 37) {
-				// console.log(3)
-				this.newright = this.whitecheck + 1;
-
-				//交换位置
-				if(this.whitecheck % 3 != 2) {
-					this.ChangePosition(this.newright, this.whitecheck);
-
-					//重新绘制新图像
-					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-				}
-				console.log(this.newarray);
-			}
-
-			//右
-			if(e.keyCode == 68 || e.keyCode == 39) {
-				// console.log(4)
-				this.newleft = this.whitecheck - 1;
-
-				//交换位置
-				if(this.whitecheck % 3 != 0) {
-					this.ChangePosition(this.newleft, this.whitecheck);
-
-					//重新绘制新图像
-					new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-				}
-				console.log(this.newarray);
-			}
+			//重新绘制新图像
+			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
 		}
-		//鼠标点击交换位置
-		// MouseMove: function() {
-
-		// }
 	}
-	//  // 移动拼图方块
-	// DrawImages.prototype.KeyMoveBlock = function(ctx, img, whites, e) {
-
-	// 	//判断空白格在哪个位置
-	// 	for(var i = 0; i < this.newarray.length; i++) {
-	// 		if(this.newarray[i] == 8) {
-	// 			this.whitecheck = i;
-	// 		}
-	// 	}
-	// 	// console.log(this.whitecheck);
-
-	// 	//上
-	// 	if(e.keyCode == 87 || e.keyCode == 38) {
-	// 		// console.log(1)
-	// 		this.newbottom = this.whitecheck + 3;
-
-	// 		//交换位置
-	// 		if(this.whitecheck / 3 < 2) {
-	// 			this.temp = this.newarray[this.newbottom];
-	// 			this.newarray[this.newbottom] = this.newarray[this.whitecheck];
-	// 			this.newarray[this.whitecheck] = this.temp;
-
-	// 			//重新绘制新图像
-	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-	// 		}
-	// 		console.log(this.newarray);
-	// 	}
-
-	// 	//下
-	// 	if(e.keyCode == 83 || e.keyCode == 40) {
-	// 		// console.log(this.sumarray);
-	// 		this.newtop = this.whitecheck - 3;
-
-	// 		//交换位置
-	// 		if(this.whitecheck / 3 >= 1) {
-	// 			this.temp = this.newarray[this.newtop];
-	// 			this.newarray[this.newtop] = this.newarray[this.whitecheck];
-	// 			this.newarray[this.whitecheck] = this.temp;
-
-	// 			//重新绘制新图像
-	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-	// 		}
-	// 		console.log(this.newarray);
-	// 	}
-
-	// 	//左
-	// 	if(e.keyCode == 65 || e.keyCode == 37) {
-	// 		// console.log(3)
-	// 		this.newright = this.whitecheck + 1;
-
-	// 		//交换位置
-	// 		if(this.whitecheck % 3 != 2) {
-	// 			this.temp = this.newarray[this.newright];
-	// 			this.newarray[this.newright] = this.newarray[this.whitecheck];
-	// 			this.newarray[this.whitecheck] = this.temp;
-
-	// 			//重新绘制新图像
-	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-	// 		}
-	// 		console.log(this.newarray);
-	// 	}
-
-	// 	//右
-	// 	if(e.keyCode == 68 || e.keyCode == 39) {
-	// 		// console.log(4)
-	// 		this.newleft = this.whitecheck - 1;
-
-	// 		//交换位置
-	// 		if(this.whitecheck % 3 != 0) {
-	// 			this.temp = this.newarray[this.newleft];
-	// 			this.newarray[this.newleft] = this.newarray[this.whitecheck];
-	// 			this.newarray[this.whitecheck] = this.temp;
-
-	// 			//重新绘制新图像
-	// 			new ChangeOrder(ctx, img, whites, this.oldarray, this.sumarray, this.newarray, false);
-	// 		}
-	// 		console.log(this.newarray);
-	// 	}
-	// }
-
-	// //鼠标点击交换位置
-	// // DrawImages.prototype.MouseMove = function() {
-	// // 	console.log(5)
-	// // }
-
 </script>
 </html>
